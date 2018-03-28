@@ -1,0 +1,8 @@
+---
+- hosts: kubernetes_cluster
+  user: derokhin
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: worker.yml

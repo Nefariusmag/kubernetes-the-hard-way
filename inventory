@@ -1,0 +1,8 @@
+[localhost]
+127.0.0.1
+
+[etcd_cluster]
+dev-etcd-[0:2].dkp.lanit.ru
+
+[kubernetes_cluster]
+dev-worker-[0:2].dkp.lanit.ru

@@ -1,0 +1,100 @@
+---
+- name: Create the installation directories
+  file:
+    path: "{{item}}"
+    recurse: yes
+    state: directory
+  with_items:
+    - /etc/cni/net.d
+    - /opt/cni/bin
+    - /var/lib/kubelet
+    - /var/lib/kube-proxy
+    - /var/lib/kubernetes
+    - /var/run/kubernetes
+
+- name: Copy the appropriate certificates and private keys to each worker instance
+  copy:
+    src: "/opt/ssl/{{item}}"
+    dest: /var/lib/kubelet/
+  with_items:
+    - "{{ ansible_hostname }}-key.pem"
+    - "{{ ansible_hostname }}.pem"
+
+- name: Copy ca.pem to each worker instance
+  copy:
+    src: /opt/ssl/ca.pem
+    dest: /var/lib/kubernetes/
+
+- name: Copy the appropriate kubelet kubeconfig files to each worker instance
+  copy:
+    src: /opt/ssl/{{ ansible_hostname }}.kubeconfig
+    dest: /var/lib/kubelet/kubeconfig
+
+- name: Copy the appropriate kube-proxy kubeconfig files to each worker instance
+  copy:
+    src: /opt/ssl/kube-proxy.kubeconfig
+    dest: /var/lib/kube-proxy/kubeconfig
+
+- name: Install the OS dependencies for Debian
+  apt:
+    name: socat
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install the OS dependencies for Centos
+  yum:
+    name: socat
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Download Worker Binaries
+  get_url:
+    url: "{{item}}"
+    dest: /tmp/
+  with_items:
+    - https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz
+    - https://github.com/containerd/cri-containerd/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz
+
+- name: Download and install worker Binaries 2
+  get_url:
+    url: "{{item}}"
+    dest: /usr/local/bin/
+    mode: 0755
+  with_items:
+    - https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
+    - https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kube-proxy
+    - https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubelet
+
+- name: Install the worker binaries
+  unarchive:
+    src: "/tmp/{{item.src}}"
+    dest: "{{item.dest}}"
+    copy: no
+  with_items:
+    - {src: "cni-plugins-amd64-v0.6.0.tgz", dest: "/opt/cni/bin/"}
+    - {src: "cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz", dest: "/"}
+
+- name: Send the network configuration files to the CNI configuration directory
+  template:
+    src: "{{item}}"
+    dest: /etc/cni/net.d/
+  with_items:
+    - 10-bridge.conf
+    - 99-loopback.conf
+
+- name: Create services for Kubelet
+  template:
+    src: "{{item}}"
+    dest: /etc/systemd/system/
+  with_items:
+    - kubelet.service
+    - kube-proxy.service
+
+- shell: systemctl daemon-reload
+- shell: systemctl enable containerd cri-containerd kubelet kube-proxy
+- shell: systemctl restart containerd cri-containerd kubelet kube-proxy
+
+- wait_for:
+    timeout: 20
+
+- shell: kubectl get nodes

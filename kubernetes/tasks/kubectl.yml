@@ -1,0 +1,60 @@
+---
+- name: download kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
+    dest: /usr/bin/kubectl
+    mode: 0755
+
+- name: check kubectl version
+  register: kubectl_version
+  shell: kubectl version --client
+
+- debug: var=kubectl_version.stdout_lines
+
+- name: Generate a kubeconfig file for each worker node
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config set-credentials system:node:{{item.instance}} --client-certificate={{item.instance}}.pem --client-key={{item.instance}}-key.pem --embed-certs=true --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config set-credentials system:node:{{item.instance}} --client-certificate={{item.instance}}.pem --client-key={{item.instance}}-key.pem --embed-certs=true --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config set-context default --cluster=kubernetes-the-hard-way --user=system:node:{{item.instance}} --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config use-context default --kubeconfig={{item.instance}}.kubeconfig
+  with_items:
+    - { instance: "{{name_worker_key}}-0"}
+    - { instance: "{{name_worker_key}}-1"}
+    - { instance: "{{name_worker_key}}-2"}
+  args:
+    chdir: /opt/ssl/
+
+- name: Generate a kubeconfig file for the kube-proxy service
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig=kube-proxy.kubeconfig
+    kubectl config set-credentials kube-proxy --client-certificate=kube-proxy.pem --client-key=kube-proxy-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
+    kubectl config set-context default --cluster=kubernetes-the-hard-way --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+    kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+  args:
+    chdir: /opt/ssl
+
+- name: Generate a kubeconfig file suitable for authenticating as the admin user
+  shell: kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443
+  args:
+    chdir: /opt/ssl
+
+- shell: kubectl config set-credentials admin --client-certificate=admin.pem --client-key=admin-key.pem
+  args:
+    chdir: /opt/ssl
+
+- shell: kubectl config set-context kubernetes-the-hard-way --cluster=kubernetes-the-hard-way --user=admin
+
+- shell: kubectl config use-context kubernetes-the-hard-way
+
+# - name: Check the health of the remote Kubernetes cluster
+#   register: result
+#   shell: kubectl get componentstatuses
+#
+# - debug: var=result
+#
+# - name: List the nodes in the remote Kubernetes cluster
+#   register: result
+#   shell: kubectl get nodes
+#
+# - debug: var=result

@@ -1,0 +1,17 @@
+---
+# defaults file for kubernetes
+name_worker_key: dev-worker
+domain: dkp.lanit.ru
+ip_instance_0: "{{name_worker_key}}-0.{{domain}}"
+ip_instance_1: "{{name_worker_key}}-1.{{domain}}"
+ip_instance_2: "{{name_worker_key}}-2.{{domain}}"
+ip_master: "dev-master.{{domain}}"
+name_etcd_0: dev-etcd-0
+name_etcd_1: dev-etcd-1
+name_etcd_2: dev-etcd-2
+ip_etcd_0: 172.29.41.25
+# ip_etcd_0: "{{name_etcd_0}}.{{domain}}"
+ip_etcd_1: 172.29.41.26
+# ip_etcd_1: "{{name_etcd_1}}.{{domain}}"
+ip_etcd_2: 172.29.41.27
+# ip_etcd_2: "{{name_etcd_2}}.{{domain}}"

@@ -1,0 +1,4 @@
+---
+# vars file for kubernetes
+dns_host: 172.29.40.204
+subnet: 172.29.41.0/24
