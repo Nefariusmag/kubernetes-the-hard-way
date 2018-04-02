@@ -1,0 +1,8 @@
+---
+- hosts: loadbalancer
+  user: derokhin
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: loadbalancer.yml

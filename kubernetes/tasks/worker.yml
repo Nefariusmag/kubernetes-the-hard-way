@@ -95,6 +95,4 @@
 - shell: systemctl restart containerd cri-containerd kubelet kube-proxy
 
 - wait_for:
-    timeout: 20
-
-- shell: kubectl get nodes
+    timeout: 10

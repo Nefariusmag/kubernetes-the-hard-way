@@ -1,6 +1,9 @@
 [localhost]
 127.0.0.1
 
+[loadbalancer]
+dev-master.dkp.lanit.ru
+
 [etcd_cluster]
 dev-etcd-[0:2].dkp.lanit.ru
 

@@ -1,14 +1,26 @@
 ---
-- name:
+- name: install nginx
+  yum:
+    name: nginx
+    state: present
 
-gcloud compute target-pools create kubernetes-target-pool
-gcloud compute target-pools add-instances kubernetes-target-pool \
-  --instances controller-0,controller-1,controller-2
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(name)')
-gcloud compute forwarding-rules create kubernetes-forwarding-rule \
-  --address ${KUBERNETES_PUBLIC_ADDRESS} \
-  --ports 6443 \
-  --region $(gcloud config get-value compute/region) \
-  --target-pool kubernetes-target-pool
+- name: create dir
+  file:
+    path: /etc/nginx/stream-enabled
+    state: directory
+
+- name: create nginx config
+  template:
+    src: kubernetes-nginx
+    dest: /etc/nginx/stream-enabled/kubernetes
+
+- name: create nginx config 2
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    line: include /etc/nginx/stream-enabled/*;
+
+- name: enable nginx and start
+  service:
+    name: nginx
+    enabled: true
+    state: restarted

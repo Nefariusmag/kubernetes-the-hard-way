@@ -1,0 +1,10 @@
+---
+- hosts: etcd_cluster
+  user: derokhin
+  become: yes
+  tasks:
+    - name: test working worker's
+      register: test_nodes
+      shell: kubectl get nodes
+
+    - debug: var=test_nodes

@@ -19,9 +19,9 @@
     kubectl config set-context default --cluster=kubernetes-the-hard-way --user=system:node:{{item.instance}} --kubeconfig={{item.instance}}.kubeconfig
     kubectl config use-context default --kubeconfig={{item.instance}}.kubeconfig
   with_items:
-    - { instance: "{{name_worker_key}}-0"}
-    - { instance: "{{name_worker_key}}-1"}
-    - { instance: "{{name_worker_key}}-2"}
+    - { instance: "{{name_worker_0}}"}
+    - { instance: "{{name_worker_1}}"}
+    - { instance: "{{name_worker_2}}"}
   args:
     chdir: /opt/ssl/
 
