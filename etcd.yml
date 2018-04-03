@@ -1,7 +1,8 @@
 ---
 - hosts: etcd_cluster
-  user: derokhin
+  user: smolin
   become: yes
+  become_method: sudo
   tasks:
     - include_role:
         name: kubernetes

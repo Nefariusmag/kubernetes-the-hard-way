@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: netwokring.yml

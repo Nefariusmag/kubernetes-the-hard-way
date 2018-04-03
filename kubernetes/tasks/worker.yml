@@ -17,8 +17,8 @@
     src: "/opt/ssl/{{item}}"
     dest: /var/lib/kubelet/
   with_items:
-    - "{{ ansible_hostname }}-key.pem"
-    - "{{ ansible_hostname }}.pem"
+    - "{{ inventory_hostname }}-key.pem"
+    - "{{ inventory_hostname }}.pem"
 
 - name: Copy ca.pem to each worker instance
   copy:
@@ -27,7 +27,7 @@
 
 - name: Copy the appropriate kubelet kubeconfig files to each worker instance
   copy:
-    src: /opt/ssl/{{ ansible_hostname }}.kubeconfig
+    src: /opt/ssl/{{ inventory_hostname }}.kubeconfig
     dest: /var/lib/kubelet/kubeconfig
 
 - name: Copy the appropriate kube-proxy kubeconfig files to each worker instance
@@ -53,7 +53,7 @@
     dest: /tmp/
   with_items:
     - https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz
-    - https://github.com/containerd/cri-containerd/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz
+#    - https://github.com/containerd/cri-containerd/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz
 
 - name: Download and install worker Binaries 2
   get_url:
@@ -72,15 +72,37 @@
     copy: no
   with_items:
     - {src: "cni-plugins-amd64-v0.6.0.tgz", dest: "/opt/cni/bin/"}
-    - {src: "cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz", dest: "/"}
+#    - {src: "cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz", dest: "/"}
 
-- name: Send the network configuration files to the CNI configuration directory
-  template:
-    src: "{{item}}"
-    dest: /etc/cni/net.d/
+# - name: Send the network configuration files to the CNI configuration directory
+  # template:
+    # src: "{{item}}"
+    # dest: /etc/cni/net.d/
+  # with_items:
+    # - 10-bridge.conf
+    # - 99-loopback.conf
+
+- name: install Docker 1
+  apt:
+    name: "{{item}}"
+    state: present
   with_items:
-    - 10-bridge.conf
-    - 99-loopback.conf
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg2
+    - software-properties-common
+    
+- name: install Docker 2
+  shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+  
+- name: install Docker 3
+  shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  
+- name: install Docker 4
+  apt:
+    name: docker-ce
+    update_cache: yes
 
 - name: Create services for Kubelet
   template:
@@ -91,8 +113,10 @@
     - kube-proxy.service
 
 - shell: systemctl daemon-reload
-- shell: systemctl enable containerd cri-containerd kubelet kube-proxy
-- shell: systemctl restart containerd cri-containerd kubelet kube-proxy
+- shell: systemctl enable  kubelet kube-proxy
+- shell: systemctl restart docker kubelet kube-proxy
 
 - wait_for:
     timeout: 10
+    
+#- name: calico

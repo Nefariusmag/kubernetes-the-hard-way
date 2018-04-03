@@ -1,0 +1,81 @@
+# ---
+# - name: Get IP ip_etcd_0
+  # shell: host {{name_etcd_0}} | awk '{print $4}' 
+  # register: "ip_etcd_0_reg"
+# - debug: var="ip_etcd_0_reg.stdout"
+# - name: variable ip
+  # set_fact:
+    # ip_etcd_0: "{{ ip_etcd_0_reg.stdout }}"
+
+# - name: Get IP ip_etcd_1
+  # shell: host {{name_etcd_1}} | awk '{print $4}' 
+  # register: "ip_etcd_1_reg"
+# - debug: var="ip_etcd_1_reg.stdout"
+# - name: variable ip
+  # set_fact:
+    # ip_etcd_1: "{{ ip_etcd_1_reg.stdout }}"
+
+# - name: Get IP ip_etcd_2 
+  # shell: host {{name_etcd_2}} | awk '{print $4}' 
+  # register: "ip_etcd_2_reg"
+# - debug: var="ip_etcd_2_reg.stdout"
+# - name: variable ip
+  # set_fact:
+    # ip_etcd_2: "{{ ip_etcd_2_reg.stdout }}" 
+
+# - name: ca.pem to base64
+  # shell: cat ca.pem | base64 -w 0
+  # args:
+    # chdir: /opt/ssl
+  # register: "base64_ca_reg"
+# - debug: var="base64_ca_reg.stdout"
+# - name: write variable base64_ca
+  # set_fact:
+    # base64_ca: "{{ base64_ca_reg.stdout }}" 
+    
+# - name: kubernetes.pem to base64
+  # shell: cat kubernetes.pem | base64 -w 0
+  # args:
+    # chdir: /opt/ssl
+  # register: "base64_cert_reg"
+# - debug: var="base64_cert_reg.stdout"
+# - name: write variable base64_cert
+  # set_fact:
+    # base64_cert: "{{ base64_cert_reg.stdout }}" 
+    
+# - name: kubernetes-key.pem to base64
+  # shell: cat kubernetes-key.pem | base64 -w 0
+  # args:
+    # chdir: /opt/ssl
+  # register: "base64_key_reg"
+# - debug: var="base64_key_reg.stdout"
+# - name: write variable base64_key
+  # set_fact:
+    # base64_key: "{{ base64_key_reg.stdout }}" 
+    
+# - name: template calico.yaml
+  # template:
+    # src: "{{ item }}"
+    # dest: /tmp/
+  # with_items:
+   # - rbac.yaml
+   # - calico.yaml
+
+
+# - name: apply calico.yaml
+  # shell: | 
+    # kubectl apply -f /tmp/rbac.yaml
+    # kubectl apply -f /tmp/calico.yaml
+  
+# - wait: 
+    # timeout: 120
+  
+- name: template kube-dns.yaml
+  copy:
+    src: "kube-dns.yaml"
+    dest: /tmp/  
+
+- name: apply kube-dns.yaml
+  shell: kubectl apply -f /tmp/kube-dns.yaml
+ 
+

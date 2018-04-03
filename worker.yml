@@ -1,6 +1,6 @@
 ---
 - hosts: kubernetes_cluster
-  user: derokhin
+  user: smolin
   become: yes
   tasks:
     - include_role:

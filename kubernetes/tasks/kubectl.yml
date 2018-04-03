@@ -11,12 +11,20 @@
 
 - debug: var=kubectl_version.stdout_lines
 
+- name: Get IP master
+  shell: host {{name_master}} | awk '{print $4}' 
+  register: "ip_master_reg"
+- debug: var="ip_master_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_master: "{{ ip_master_reg.stdout }}" 
+
 - name: Generate a kubeconfig file for each worker node
   shell: |
-    kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config set-cluster kubernetes --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig={{item.instance}}.kubeconfig
     kubectl config set-credentials system:node:{{item.instance}} --client-certificate={{item.instance}}.pem --client-key={{item.instance}}-key.pem --embed-certs=true --kubeconfig={{item.instance}}.kubeconfig
     kubectl config set-credentials system:node:{{item.instance}} --client-certificate={{item.instance}}.pem --client-key={{item.instance}}-key.pem --embed-certs=true --kubeconfig={{item.instance}}.kubeconfig
-    kubectl config set-context default --cluster=kubernetes-the-hard-way --user=system:node:{{item.instance}} --kubeconfig={{item.instance}}.kubeconfig
+    kubectl config set-context default --cluster=kubernetes --user=system:node:{{item.instance}} --kubeconfig={{item.instance}}.kubeconfig
     kubectl config use-context default --kubeconfig={{item.instance}}.kubeconfig
   with_items:
     - { instance: "{{name_worker_0}}"}
@@ -27,25 +35,25 @@
 
 - name: Generate a kubeconfig file for the kube-proxy service
   shell: |
-    kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig=kube-proxy.kubeconfig
+    kubectl config set-cluster kubernetes --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443 --kubeconfig=kube-proxy.kubeconfig
     kubectl config set-credentials kube-proxy --client-certificate=kube-proxy.pem --client-key=kube-proxy-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
-    kubectl config set-context default --cluster=kubernetes-the-hard-way --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+    kubectl config set-context default --cluster=kubernetes --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
     kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
   args:
     chdir: /opt/ssl
 
 - name: Generate a kubeconfig file suitable for authenticating as the admin user
-  shell: kubectl config set-cluster kubernetes-the-hard-way --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443
+  shell: kubectl config set-cluster kubernetes --certificate-authority=ca.pem --embed-certs=true --server=https://{{ip_master}}:6443
   args:
-    chdir: /opt/ssl
+    chdir: /opt/ssl/
 
 - shell: kubectl config set-credentials admin --client-certificate=admin.pem --client-key=admin-key.pem
   args:
     chdir: /opt/ssl
 
-- shell: kubectl config set-context kubernetes-the-hard-way --cluster=kubernetes-the-hard-way --user=admin
+- shell: kubectl config set-context kubernetes --cluster=kubernetes --user=admin
 
-- shell: kubectl config use-context kubernetes-the-hard-way
+- shell: kubectl config use-context kubernetes
 
 # - name: Check the health of the remote Kubernetes cluster
 #   register: result
@@ -58,3 +66,5 @@
 #   shell: kubectl get nodes
 #
 # - debug: var=result
+
+
