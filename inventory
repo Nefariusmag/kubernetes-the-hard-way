@@ -2,10 +2,10 @@
 127.0.0.1
 
 [loadbalancer]
-dev-master.dkp.lanit.ru
+dev-master.dds.lanit.ru
 
 [etcd_cluster]
-dev-etcd-[0:2].dkp.lanit.ru
+dev-etcd-[0:2].dds.lanit.ru
 
 [kubernetes_cluster]
-dev-worker-[0:2].dkp.lanit.ru
+dev-worker-[0:2].dds.lanit.ru

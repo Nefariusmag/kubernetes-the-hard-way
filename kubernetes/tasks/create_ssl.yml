@@ -57,26 +57,84 @@
     src: instance-csr.json
     dest: /opt/ssl/{{item.instance}}-csr.json
   with_items:
-    - { instance: "{{name_worker_key}}-0"}
-    - { instance: "{{name_worker_key}}-1"}
-    - { instance: "{{name_worker_key}}-2"}
+    - { instance: "{{name_worker_0}}"}
+    - { instance: "{{name_worker_1}}"}
+    - { instance: "{{name_worker_2}}"}
+    
+- name: Get IP worker-0 
+  shell: host {{name_worker_0}} | awk '{print $4}' 
+  register: "ip_worker_0_reg"
+- debug: var="ip_worker_0_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_worker_0: "{{ ip_worker_0_reg.stdout }}"
 
+- name: Get IP worker-1 
+  shell: host {{name_worker_1}} | awk '{print $4}' 
+  register: "ip_worker_1_reg"
+- debug: var="ip_worker_1_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_worker_1: "{{ ip_worker_1_reg.stdout }}"
+
+- name: Get IP worker-2 
+  shell: host {{name_worker_2}} | awk '{print $4}' 
+  register: "ip_worker_2_reg"
+- debug: var="ip_worker_2_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_worker_2: "{{ ip_worker_2_reg.stdout }}"     
+ 
+  
 - name: Generate a certificate and private key for each Kubernetes worker node
   shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname={{item.instance}},{{item.ip_instance}} -profile=kubernetes {{item.instance}}-csr.json | cfssljson -bare {{item.instance}}
   args:
     chdir: /opt/ssl/
   with_items:
-    - { instance: "{{name_worker_key}}-0", ip_instance: "{{ip_instance_0}}"}
-    - { instance: "{{name_worker_key}}-1", ip_instance: "{{ip_instance_1}}"}
-    - { instance: "{{name_worker_key}}-2", ip_instance: "{{ip_instance_2}}"}
+    - { instance: "{{name_worker_0}}", ip_instance: "{{ip_worker_0}}"}
+    - { instance: "{{name_worker_1}}", ip_instance: "{{ip_worker_1}}"}
+    - { instance: "{{name_worker_2}}", ip_instance: "{{ip_worker_2}}"}
 
 - name: Generate the kube-proxy client certificate and private key
   shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes kube-proxy-csr.json | cfssljson -bare kube-proxy
   args:
     chdir: /opt/ssl/
 
+- name: Get IP ip_etcd_0
+  shell: host {{name_etcd_0}} | awk '{print $4}' 
+  register: "ip_etcd_0_reg"
+- debug: var="ip_etcd_0_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_etcd_0: "{{ ip_etcd_0_reg.stdout }}"
+
+- name: Get IP ip_etcd_1
+  shell: host {{name_etcd_1}} | awk '{print $4}' 
+  register: "ip_etcd_1_reg"
+- debug: var="ip_etcd_1_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_etcd_1: "{{ ip_etcd_1_reg.stdout }}"
+
+- name: Get IP ip_etcd_2 
+  shell: host {{name_etcd_2}} | awk '{print $4}' 
+  register: "ip_etcd_2_reg"
+- debug: var="ip_etcd_2_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_etcd_2: "{{ ip_etcd_2_reg.stdout }}" 
+    
+- name: Get IP master
+  shell: host {{name_master}} | awk '{print $4}' 
+  register: "ip_master_reg"
+- debug: var="ip_master_reg.stdout"
+- name: variable ip
+  set_fact:
+    ip_master: "{{ ip_master_reg.stdout }}" 
+
+    
 - name: Generate the Kubernetes API Server certificate and private key
-  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname={{ip_etcd_0}},{{ip_etcd_1}},{{ip_etcd_2}},{{ip_master}},127.0.0.1,kubernetes.default -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
+  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname=10.32.0.1,{{ip_etcd_0}},{{ip_etcd_1}},{{ip_etcd_2}},{{ip_master}},127.0.0.1,kubernetes.default -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
   args:
     chdir: /opt/ssl/
 
