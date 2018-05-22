@@ -1,0 +1,18 @@
+---
+- name: copy config for monitoring
+  copy:
+    src: "{{item}}"
+    dest: /tmp/
+  with_items:
+    - grafana.yaml
+    - heapster.yaml
+    - influxdb.yaml
+    - heapster-rbac.yaml
+
+- name: apply monitoring
+  shell: "kubectl apply -f /tmp/{{item}}"
+  with_items:
+    - grafana.yaml
+    - heapster.yaml
+    - influxdb.yaml
+    - heapster-rbac.yaml

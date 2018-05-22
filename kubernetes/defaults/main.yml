@@ -1,7 +1,5 @@
 ---
 # defaults file for kubernetes
-name_worker_key: dev-worker
-domain: dds.lanit.ru
 name_etcd_0: dev-etcd-0.dds.lanit.ru
 name_etcd_1: dev-etcd-1.dds.lanit.ru
 name_etcd_2: dev-etcd-2.dds.lanit.ru
@@ -9,4 +7,3 @@ name_worker_0: dev-worker-0.dds.lanit.ru
 name_worker_1: dev-worker-1.dds.lanit.ru
 name_worker_2: dev-worker-2.dds.lanit.ru
 name_master: dev-master.dds.lanit.ru
-

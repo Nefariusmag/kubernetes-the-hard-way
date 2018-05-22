@@ -1,9 +1,8 @@
 ---
-- hosts: etcd_cluster
+- hosts: loadbalancer
   user: "{{remoteuser}}"
   become: yes
-  become_method: sudo
   tasks:
     - include_role:
         name: kubernetes
-        tasks_from: etcd.yml
+        tasks_from: monitoring.yml

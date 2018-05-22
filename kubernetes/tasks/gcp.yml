@@ -1,8 +1,0 @@
----
-- name: download
-  get_url:
-    url: https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-193.0.0-linux-x86_64.tar.gz
-    dest: /tmp/google-cloud-sdk-193.0.0-linux-x86_64.tar.gz
-
-- name:
-  shell: gcloud version

@@ -1,12 +1,11 @@
 stream {
-        upstream kuberapi
-        {
-        server {{ip_etcd_0}}:6443;
-        server {{ip_etcd_1}}:6443;
-        server {{ip_etcd_2}}:6443;
-        }
-        server {
-        listen     6443;
-        proxy_pass kuberapi;
-        }
+  upstream kuberapi {
+    server {{ip_etcd_0}}:6443;
+    server {{ip_etcd_1}}:6443;
+    server {{ip_etcd_2}}:6443;
+  }
+  server {
+    listen     6443;
+    proxy_pass kuberapi;
+  }
 }

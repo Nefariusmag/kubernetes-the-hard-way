@@ -1,6 +1,6 @@
 ---
 - hosts: kubernetes_cluster
-  user: smolin
+  user: "{{remoteuser}}"
   become: yes
   tasks:
     - include_role:

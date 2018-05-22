@@ -1,6 +1,6 @@
 ---
 - hosts: etcd_cluster
-  user: derokhin
+  user: "{{remoteuser}}"
   become: yes
   tasks:
     - name: test working worker's

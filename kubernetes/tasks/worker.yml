@@ -92,13 +92,14 @@
     - curl
     - gnupg2
     - software-properties-common
-    
+    - nfs-common
+
 - name: install Docker 2
   shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-  
+
 - name: install Docker 3
   shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-  
+
 - name: install Docker 4
   apt:
     name: docker-ce
@@ -118,5 +119,5 @@
 
 - wait_for:
     timeout: 10
-    
+
 #- name: calico

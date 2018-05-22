@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: create_ssl.yml
+
+- hosts: etcd_cluster
+  user: "{{remoteuser}}"
+  become: yes
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: etcd.yml
+
+- hosts: loadbalancer
+  user: "{{remoteuser}}"
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: loadbalancer.yml
+
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: kubectl.yml
+
+- hosts: kubernetes_cluster
+  user: "{{remoteuser}}"
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: worker.yml
+
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: netwokring.yml
+
+- hosts: loadbalancer
+  user: "{{remoteuser}}"
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: monitoring.yml
