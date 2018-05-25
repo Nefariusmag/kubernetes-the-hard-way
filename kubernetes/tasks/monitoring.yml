@@ -1,8 +1,13 @@
 ---
+- name: create folder
+  file:
+    path: /root/monitoring
+    state: directory
+
 - name: copy config for monitoring
   copy:
     src: "{{item}}"
-    dest: /tmp/
+    dest: /tmp/monitoring/
   with_items:
     - grafana.yaml
     - heapster.yaml
@@ -10,7 +15,7 @@
     - heapster-rbac.yaml
 
 - name: apply monitoring
-  shell: "kubectl apply -f /tmp/{{item}}"
+  shell: "kubectl apply -f /tmp/monitoring/{{item}}"
   with_items:
     - grafana.yaml
     - heapster.yaml

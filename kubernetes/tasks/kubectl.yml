@@ -1,4 +1,9 @@
 ---
+- name: copy ssl
+  copy:
+    src: /opt/ssl
+    dest: /opt/
+
 - name: download kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
@@ -12,12 +17,12 @@
 - debug: var=kubectl_version.stdout_lines
 
 - name: Get IP master
-  shell: host {{name_master}} | awk '{print $4}' 
+  shell: host {{name_master}} | awk '{print $4}'
   register: "ip_master_reg"
 - debug: var="ip_master_reg.stdout"
 - name: variable ip
   set_fact:
-    ip_master: "{{ ip_master_reg.stdout }}" 
+    ip_master: "{{ ip_master_reg.stdout }}"
 
 - name: Generate a kubeconfig file for each worker node
   shell: |
@@ -55,6 +60,14 @@
 
 - shell: kubectl config use-context kubernetes
 
+- name: Change user
+  file:
+    path: /opt/ssl/
+    owner: "{{remoteuser}}"
+    group: "{{remoteuser}}"
+    recurse: true
+    # state: directory
+
 # - name: Check the health of the remote Kubernetes cluster
 #   register: result
 #   shell: kubectl get componentstatuses
@@ -66,5 +79,3 @@
 #   shell: kubectl get nodes
 #
 # - debug: var=result
-
-

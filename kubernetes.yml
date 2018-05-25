@@ -24,10 +24,6 @@
         name: kubernetes
         tasks_from: loadbalancer.yml
 
-- hosts: localhost
-  connection: local
-  become: yes
-  tasks:
     - include_role:
         name: kubernetes
         tasks_from: kubectl.yml
@@ -40,7 +36,7 @@
         name: kubernetes
         tasks_from: worker.yml
 
-- hosts: localhost
+- hosts: loadbalancer
   connection: local
   become: yes
   tasks:
@@ -48,10 +44,6 @@
         name: kubernetes
         tasks_from: netwokring.yml
 
-- hosts: loadbalancer
-  user: "{{remoteuser}}"
-  become: yes
-  tasks:
     - include_role:
         name: kubernetes
         tasks_from: monitoring.yml
