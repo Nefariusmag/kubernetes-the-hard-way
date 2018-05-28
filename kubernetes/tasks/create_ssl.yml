@@ -1,3 +1,8 @@
+- name: Delete folder
+  file:
+    path: /opt/ssl
+    state: absent
+
 - name: Download cfssl
   get_url:
     url: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
