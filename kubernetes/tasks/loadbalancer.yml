@@ -10,7 +10,7 @@
     state: directory
 
 - name: Get IP ip_etcd_0
-  shell: host {{name_etcd_0}} | awk '{print $4}' 
+  shell: host {{name_etcd_0}} | awk '{print $4}'
   register: "ip_etcd_0_reg"
 - debug: var="ip_etcd_0_reg.stdout"
 - name: variable ip
@@ -18,21 +18,21 @@
     ip_etcd_0: "{{ ip_etcd_0_reg.stdout }}"
 
 - name: Get IP ip_etcd_1
-  shell: host {{name_etcd_1}} | awk '{print $4}' 
+  shell: host {{name_etcd_1}} | awk '{print $4}'
   register: "ip_etcd_1_reg"
 - debug: var="ip_etcd_1_reg.stdout"
 - name: variable ip
   set_fact:
     ip_etcd_1: "{{ ip_etcd_1_reg.stdout }}"
 
-- name: Get IP ip_etcd_2 
-  shell: host {{name_etcd_2}} | awk '{print $4}' 
+- name: Get IP ip_etcd_2
+  shell: host {{name_etcd_2}} | awk '{print $4}'
   register: "ip_etcd_2_reg"
 - debug: var="ip_etcd_2_reg.stdout"
 - name: variable ip
   set_fact:
-    ip_etcd_2: "{{ ip_etcd_2_reg.stdout }}" 
-    
+    ip_etcd_2: "{{ ip_etcd_2_reg.stdout }}"
+
 - name: create nginx config
   template:
     src: kubernetes-nginx

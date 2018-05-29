@@ -16,6 +16,14 @@
         name: kubernetes
         tasks_from: etcd.yml
 
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - include_role:
+        name: kubernetes
+        tasks_from: kubectl.yml
+
 - hosts: loadbalancer
   user: "{{remoteuser}}"
   become: yes
@@ -23,10 +31,9 @@
     - include_role:
         name: kubernetes
         tasks_from: loadbalancer.yml
-
     - include_role:
         name: kubernetes
-        tasks_from: kubectl.yml
+        tasks_from: kubeconfig.yml
 
 - hosts: kubernetes_cluster
   user: "{{remoteuser}}"
@@ -37,13 +44,12 @@
         tasks_from: worker.yml
 
 - hosts: loadbalancer
-  connection: local
+  user: "{{remoteuser}}"
   become: yes
   tasks:
     - include_role:
         name: kubernetes
         tasks_from: netwokring.yml
-
     - include_role:
         name: kubernetes
         tasks_from: monitoring.yml

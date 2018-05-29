@@ -6,3 +6,6 @@
     - include_role:
         name: kubernetes
         tasks_from: loadbalancer.yml
+    - include_role:
+        name: kubernetes
+        tasks_from: kubeconfig.yml

@@ -1,4 +1,4 @@
-- name: Delete folder
+- name: Delete folder /opt/ssl
   file:
     path: /opt/ssl
     state: absent
@@ -31,7 +31,7 @@
 
 - debug: var=cfssl_version.stdout_lines
 
-- name: Create folder
+- name: Create folder /opt/ssl
   file:
     path: /opt/ssl
     state: directory
@@ -89,7 +89,6 @@
 - name: variable ip
   set_fact:
     ip_worker_2: "{{ ip_worker_2_reg.stdout }}"
-
 
 - name: Generate a certificate and private key for each Kubernetes worker node
   shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname={{item.instance}},{{item.ip_instance}} -profile=kubernetes {{item.instance}}-csr.json | cfssljson -bare {{item.instance}}
@@ -164,4 +163,3 @@
     owner: "{{remoteuser}}"
     group: "{{remoteuser}}"
     recurse: true
-    # state: directory

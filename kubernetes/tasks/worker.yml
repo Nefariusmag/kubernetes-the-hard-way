@@ -72,15 +72,6 @@
     copy: no
   with_items:
     - {src: "cni-plugins-amd64-v0.6.0.tgz", dest: "/opt/cni/bin/"}
-#    - {src: "cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz", dest: "/"}
-
-# - name: Send the network configuration files to the CNI configuration directory
-  # template:
-    # src: "{{item}}"
-    # dest: /etc/cni/net.d/
-  # with_items:
-    # - 10-bridge.conf
-    # - 99-loopback.conf
 
 - name: install Docker 1
   apt:
@@ -119,5 +110,3 @@
 
 - wait_for:
     timeout: 10
-
-#- name: calico

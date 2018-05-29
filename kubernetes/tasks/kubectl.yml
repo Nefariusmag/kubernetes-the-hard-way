@@ -1,9 +1,4 @@
 ---
-- name: copy ssl
-  copy:
-    src: /opt/ssl
-    dest: /opt/
-
 - name: download kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
@@ -66,16 +61,3 @@
     owner: "{{remoteuser}}"
     group: "{{remoteuser}}"
     recurse: true
-    # state: directory
-
-# - name: Check the health of the remote Kubernetes cluster
-#   register: result
-#   shell: kubectl get componentstatuses
-#
-# - debug: var=result
-#
-# - name: List the nodes in the remote Kubernetes cluster
-#   register: result
-#   shell: kubectl get nodes
-#
-# - debug: var=result
