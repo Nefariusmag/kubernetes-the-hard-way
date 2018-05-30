@@ -55,6 +55,57 @@
 
 - shell: kubectl config use-context kubernetes
 
+- name: download java
+  ignore_errors: true
+  get_url:
+    url: http://artifactory.dkp.lanit.ru:8081/artifactory/utils/oracle/java/1.8/java-1.8.sh # или интернет
+    dest: /opt/install_java_bin.sh
+    mode: 0755
+
+- block: # генерим ключ для доступа к кластеру
+
+  - name: install java
+    ignore_errors: true
+    shell: /opt/install_java_bin.sh
+
+  - name: delete java installer
+    ignore_errors: true
+    file:
+      path: /opt/install_java_bin.sh
+      state: absent
+
+  - name: test java installed
+    ignore_errors: true
+    register: java_status
+    shell: /opt/jdk8/bin/java -version
+
+  - debug: var=java_status.stderr_lines
+
+  - name: generate key step 0
+    shell: |
+      cat kubernetes.pem > super.pem
+      cat admin.pem >> super.pem
+      cat kubernetes-key.pem > super-key.pem
+      cat admin-key.pem >> super-key.pem
+    args:
+      chdir: /opt/ssl
+
+  - name: generate key step 1
+    shell: openssl pkcs12 -export -in ./super.pem -inkey ./super-key.pem -out ./kube-api-keystore.p12 -name {{name_master}} -passin pass:1234567890 -passout pass:1234567890
+    args:
+      chdir: /opt/ssl
+
+  - name: generate key step 2
+    ignore_errors: true
+    shell: keytool -importkeystore -srckeystore ./kube-api-keystore.p12 -srcstoretype PKCS12 -srcstorepass 1234567890 -alias {{name_master}} -deststorepass 1234567890 -destkeypass 1234567890 -destkeystore ./kube-api-keystore.jks
+    args:
+      chdir: /opt/ssl
+
+  - name: generate key step 3
+    shell: echo "$(cat ./kube-api-keystore.jks | base64)" > base64_file
+    args:
+      chdir: /opt/ssl
+
 - name: Change user
   file:
     path: /opt/ssl/
