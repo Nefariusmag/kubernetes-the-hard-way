@@ -1,6 +1,6 @@
 ---
 - hosts: loadbalancer
-  user: "{{remoteuser}}"
+#  connection: local
   become: yes
   tasks:
     - include_role:

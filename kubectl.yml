@@ -1,6 +1,6 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: loadbalancer
+# connection: local
   become: yes
   tasks:
     - include_role:
