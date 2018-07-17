@@ -2,19 +2,19 @@
 127.0.0.1
 
 [loadbalancer]
-mdm-prod-master.dds.lanit.ru
+test-master
 
 [etcd_cluster]
-mdm-prod-etcd-[0:2].dds.lanit.ru
+test-etcd-[0:2]
 
 [kubernetes_cluster]
-mdm-prod-worker-[0:2].dds.lanit.ru
+test-worker-[0:2]
 
 [all:vars]
-name_etcd_0=mdm-prod-etcd-0.dds.lanit.ru
-name_etcd_1=mdm-prod-etcd-1.dds.lanit.ru
-name_etcd_2=mdm-prod-etcd-2.dds.lanit.ru
-name_worker_0=mdm-prod-worker-0.dds.lanit.ru
-name_worker_1=mdm-prod-worker-1.dds.lanit.ru
-name_worker_2=mdm-prod-worker-2.dds.lanit.ru
-name_master=mdm-prod-master.dds.lanit.ru
+name_etcd_0=test-etcd-0
+name_etcd_1=test-etcd-1
+name_etcd_2=test-etcd-2
+name_worker_0=test-worker-0
+name_worker_1=test-worker-1
+name_worker_2=test-worker-2
+name_master=test-master

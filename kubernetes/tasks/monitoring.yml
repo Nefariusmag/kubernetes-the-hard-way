@@ -6,8 +6,8 @@
 
 - name: copy config for monitoring
   copy:
-    src: "{{item}}"
-    dest: /tmp/monitoring/
+    src: "monitoring/{{item}}"
+    dest: /root/monitoring/
   with_items:
     - grafana.yaml
     - heapster.yaml
@@ -15,7 +15,7 @@
     - heapster-rbac.yaml
 
 - name: apply monitoring
-  shell: "kubectl apply -f /tmp/monitoring/{{item}}"
+  shell: "kubectl apply -f /root/monitoring/{{item}}"
   with_items:
     - grafana.yaml
     - heapster.yaml
