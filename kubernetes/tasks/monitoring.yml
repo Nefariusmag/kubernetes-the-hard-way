@@ -21,3 +21,20 @@
     - heapster.yaml
     - influxdb.yaml
     - heapster-rbac.yaml
+
+#################################
+
+- name: copy config for monitoring
+  copy:
+    src: "monitoring/efk/{{item}}"
+    dest: /root/monitoring/
+  with_items:
+    - es-pvc.yaml
+    - es-service.yaml
+    - es-statefulset.yaml
+    - fluentd-es-ds.yaml
+    - fluentd-es-configmap.yaml
+    - kibana-deployment.yaml
+    - kibana-service.yaml
+  tags:
+    - efk
