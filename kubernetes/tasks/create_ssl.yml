@@ -1,3 +1,4 @@
+---
 - name: Delete folder /opt/ssl
   file:
     path: /opt/ssl
@@ -135,7 +136,6 @@
 - name: variable ip
   set_fact:
     ip_master: "{{ ip_master_reg.stdout }}"
-
 
 - name: Generate the Kubernetes API Server certificate and private key
   shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -hostname=10.32.0.1,{{ip_etcd_0}},{{ip_etcd_1}},{{ip_etcd_2}},{{ip_master}},127.0.0.1,kubernetes.default -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
